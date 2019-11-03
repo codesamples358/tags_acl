@@ -4,6 +4,31 @@ class TagPermissionRule < ActiveRecord::Base
   validates :role_id, :presence => true
 
   belongs_to :role
+  after_save :update_prohibited
+
+  has_many :prohibited_issues, dependent: :delete_all
+
+  def issue_scope
+    options = tag_not ? { :exclude => true, :wild => false } : { wild: false}
+    Issue.tagged_with([ tag ], options)
+  end
+
+  def members_scope
+    base = Member.joins(:member_roles)
+
+    if !role_not
+      base.where(member_roles: { role_id: self.role_id })
+    else
+      base.where('member_roles.role_id <> ?', self.role_id)
+    end
+  end
+
+  def scope
+    issue_scope
+      .select("#{Issue.table_name}.*, #{Member.table_name}.user_id as membership_user_id")
+      .joins(project: {memberships: :member_roles})
+      .merge(members_scope)
+  end
 
   def matches?(user, issue)
     return false unless matches_issue?(issue)
@@ -70,6 +95,51 @@ class TagPermissionRule < ActiveRecord::Base
           "(tags.name #{op} '#{rule.tag}')"
         end
       end.compact.join(' AND ')
+    end
+  end
+
+  def update_prohibited
+    self.prohibited_issues.delete_all
+    update_scope scope
+  end
+
+  def update_scope(scope)
+    scope.each do |issue|
+      pi         = self.prohibited_issues.new
+      pi.issue   = issue
+      pi.user_id = issue.membership_user_id
+      pi.save
+    end
+  end
+
+  # when issue's tags change
+  # some permission rules may begin (or stop) to apply
+
+  def self.update_prohibited_for_issue(issue)
+    # return unless issue.tag_list_changed?
+    issue.prohibited_issues.delete_all
+
+    all.each do |rule|
+      scope = rule.scope.where(issues: {id: issue.id})
+
+      if scope.exists?
+        rule.update_scope(scope)
+      end
+    end
+  end
+
+  # when we add or destroy a role to some member, 
+  # some permission rules may begin (or stop) to apply
+  
+  def self.update_prohibited_for_member_role(member_role)
+    ProhibitedIssue.where(user_id: member_role.member.user_id).delete_all
+
+    all.each do |rule|
+      scope = rule.scope.where(members: { id: member_role.member_id })
+
+      if scope.exists?
+        rule.update_scope(scope)
+      end
     end
   end
 end
