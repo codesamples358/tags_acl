@@ -5,7 +5,7 @@ en:
   tags_acl_rule: Rule
   tags_acl_new_rule: New rule
   tags_acl_manage_rules: Manage rules
-  setting_tags_acl_rule: Tag acl rules
+  setting_tags_acl_rule: Tags ACL
 
   field_tags_acl_rule_name: Rule name
 
