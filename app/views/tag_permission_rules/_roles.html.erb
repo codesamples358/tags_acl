@@ -1,0 +1,4 @@
+    <%= select_tag('source_role_id',
+                content_tag('option', "--- #{l(:actionview_instancetag_blank_option)} ---", :value => '') +
+                content_tag('option', "--- #{ l(:label_copy_same_as_target) } ---", :value => 'any') +
+                options_from_collection_for_select(Role.all, 'id', 'name', @source_role && @source_role.id)) %>

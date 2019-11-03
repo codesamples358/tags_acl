@@ -1,0 +1,42 @@
+<% rules = TagPermissionRule.all %>
+
+<% unless rules.empty? %>
+  <table class="list issues">
+    <thead>
+      <tr>
+        <th class="checkbox hide-when-print">
+          <%= link_to image_tag('toggle_check.png'), {},
+                onclick: 'toggleIssuesSelection(this); return false;',
+                title: "#{ l :button_check_all }/#{ l :button_uncheck_all }" %>
+        </th>
+        <th><%= l(:field_name) %></th>
+        <th align="center" style="width:10%;"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% rules.each do |rule| %>
+        <tr id="<%= tag.id %>" class="<%= cycle('odd', 'even') %>">
+          <td class="checkbox hide-when-print">
+            <%= check_box_tag 'ids[]', tag.id, false, id: nil %>
+          </td>
+          <td>
+            <!-- <%= link_to rule.name, tag_permission_rule_path(rule) %> -->
+
+            <%= rule.name %>
+          </td>
+          <td class="buttons">
+            <%= link_to l(:button_edit), edit_tag_permission_rule_path(rule),
+                  class: 'icon icon-edit' %>
+            <%= link_to l(:button_delete), tag_permission_rules_path(ids: rule), method: :delete,
+                  confirm: l(:text_are_you_sure), class: 'icon icon-del' %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p class="nodata"><%= l :label_no_data %></p>
+<% end %>
+
+
+<%= link_to l(:button_add), new_tag_permission_rule_path %>

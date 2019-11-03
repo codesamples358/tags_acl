@@ -1,0 +1,12 @@
+<h2>
+  <%= link_to l(:setting_tags_acl_rule), controller: 'settings', action: 'plugin',
+        id: 'tags_acl', tab: 'manage_rules' %>
+  &#187;
+
+  <!-- <%= h l(:tags_acl_rule) + ': ' + @rule.name %> -->
+
+  <%= l(:tags_acl_new_rule) %>
+</h2>
+
+
+<%= render 'form' %>

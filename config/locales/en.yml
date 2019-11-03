@@ -1,0 +1,19 @@
+# English strings go here for Rails i18n
+en:
+  # my_label: "My label"
+  tags_acl_role: Role
+  tags_acl_rule: Rule
+  tags_acl_new_rule: New rule
+  tags_acl_manage_rules: Manage rules
+  setting_tags_acl_rule: Tag acl rules
+
+  field_tags_acl_rule_name: Rule name
+
+  field_tags_acl_tag: Tag
+
+
+  field_value_role_is: is
+  field_value_role_is_not: is not
+
+  field_value_tag_is: is
+  field_value_tag_is_not: is not

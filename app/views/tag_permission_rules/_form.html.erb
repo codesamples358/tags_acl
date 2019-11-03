@@ -1,0 +1,39 @@
+<%= error_messages_for @rule %>
+
+<%= form_for @rule, html: { class: 'tabular' } do |form| %>
+  
+  <div class="box">
+    <!--[form:optvalue]-->
+    <p>
+      <label for="tag_rule_permission_name"><%= l :field_tags_acl_rule_name %></label>
+
+      <%= form.text_field :name  %>
+    </p>
+
+    <p>
+      <label for="tag_rule_permission_name"><%= l :field_role %></label>
+
+      <%= form.select(:role_not, [
+        [ l(:field_value_role_is), false ],
+        [ l(:field_value_role_is_not), true ],
+      ]) %>
+
+      <%= form.select(:role_id,
+        options_from_collection_for_select(Role.all, 'id', 'name', @rule && @rule.role_id)) %>
+    </p>
+
+    <p>
+      <label for="tag_rule_permission_name"><%= l :field_tags_acl_tag %></label>
+
+      <%= form.select(:tag_not, [
+        [ l(:field_value_tag_is), false ],
+        [ l(:field_value_tag_is_not), true ],
+      ]) %>
+
+      <%#= form.text_field(:tag_list, {value: @rule.tags.map(&:name).join(', ')}) %>
+
+      <%= form.text_field(:tag) %>
+    </p>
+  </div>
+  <%= submit_tag l(:button_save) %>
+<% end %>

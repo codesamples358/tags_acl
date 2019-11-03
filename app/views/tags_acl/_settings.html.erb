@@ -1,0 +1,17 @@
+<%
+  tags_tabs = [
+    # {
+    #   name:    'general',
+    #   partial: 'tags/general',
+    #   label:   :label_general
+    # },
+    {
+      name:    'manage_rules',
+      partial: 'tags_acl/manage_rules',
+      label:   :tags_acl_manage_rules
+    }
+  ]
+%>
+
+<% html_title l(:label_settings), l(:tags) %>
+<%= render_tabs tags_tabs %>
