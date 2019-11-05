@@ -17,7 +17,6 @@ module TagsAcl
         base.class_eval do
           default_scope { 
             joins("LEFT OUTER JOIN #{pi_table} ON #{pi_table}.issue_id = #{self.table_name}.id AND #{pi_table}.user_id = #{User.current.id}")
-            # .where("#{pi_table}.id IS NULL")
           }
 
           alias_method :visible_without_acl_tags?, :visible?
