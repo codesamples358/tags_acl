@@ -7,23 +7,37 @@ module TagsAcl
         base.singleton_class.class_eval do
           alias_method :visible_condition_without_acl_tags, :visible_condition
           alias_method :visible_condition, :visible_condition_with_acl_tags
+
+          # alias_method :visible_without_acl_tags, :visible
+          # alias_method :visible, :visible_with_acl_tags
         end
-
-
-        base.send(:include, InstanceMethods)
 
         pi_table = ProhibitedIssue.table_name
 
-        base.class_eval do
-          default_scope { 
-            migrated = User.columns.map(&:name).include?('identity_url')
 
-            if migrated # && User.current.logged?
+        base.class_eval do
+          scope_before = method(:visible).to_proc
+
+          scope :visible, lambda {|*args|
+            scope_before.call(*args).
               joins("LEFT OUTER JOIN #{pi_table} ON #{pi_table}.issue_id = #{self.table_name}.id AND #{pi_table}.user_id = #{User.current.id}")
-            else
-              where("1=1")
-            end
+            
           }
+        end
+
+        base.send(:include, InstanceMethods)
+
+
+        base.class_eval do
+          # default_scope { 
+          #   migrated = User.columns.map(&:name).include?('identity_url')
+
+          #   if migrated # && User.current.logged?
+          #     joins("LEFT OUTER JOIN #{pi_table} ON #{pi_table}.issue_id = #{self.table_name}.id AND #{pi_table}.user_id = #{User.current.id}")
+          #   else
+          #     where("1=1")
+          #   end
+          # }
 
           alias_method :visible_without_acl_tags?, :visible?
           alias_method :visible?, :visible_with_acl_tags?
