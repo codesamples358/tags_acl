@@ -16,7 +16,13 @@ module TagsAcl
 
         base.class_eval do
           default_scope { 
-            joins("LEFT OUTER JOIN #{pi_table} ON #{pi_table}.issue_id = #{self.table_name}.id AND #{pi_table}.user_id = #{User.current.id}")
+            migrated = User.columns.map(&:name).include?('identity_url')
+
+            if migrated # && User.current.logged?
+              joins("LEFT OUTER JOIN #{pi_table} ON #{pi_table}.issue_id = #{self.table_name}.id AND #{pi_table}.user_id = #{User.current.id}")
+            else
+              where("1=1")
+            end
           }
 
           alias_method :visible_without_acl_tags?, :visible?
