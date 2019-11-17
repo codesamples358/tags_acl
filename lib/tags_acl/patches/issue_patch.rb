@@ -8,12 +8,13 @@ module TagsAcl
           alias_method :visible_condition_without_acl_tags, :visible_condition
           alias_method :visible_condition, :visible_condition_with_acl_tags
 
-          # alias_method :visible_without_acl_tags, :visible
-          # alias_method :visible, :visible_with_acl_tags
+
+          alias_method :load_visible_relations_without_acl_tags, :load_visible_relations
+          alias_method :load_visible_relations, :load_visible_relations_with_acl_tags
+
         end
 
         pi_table = ProhibitedIssue.table_name
-
 
         base.class_eval do
           scope_before = method(:visible).to_proc
@@ -52,6 +53,12 @@ module TagsAcl
           sql = visible_condition_without_acl_tags(user, options)
 
           "((#{sql}) AND prohibited_issues.id IS NULL)"
+        end
+
+        def load_visible_relations_with_acl_tags(*args)
+          IssueRelation._joining_prohibited_issues { 
+            load_visible_relations_without_acl_tags(*args) 
+          }
         end
       end
 
