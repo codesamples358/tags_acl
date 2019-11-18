@@ -9,8 +9,13 @@ module TagsAcl
           scope_before = method(:visible).to_proc
 
           scope :visible, lambda {|*args|
-            scope_before.call(*args).
-              joins("LEFT OUTER JOIN #{pi_table} ON #{pi_table}.issue_id = #{Issue.table_name}.id AND #{pi_table}.user_id = #{User.current.id}")
+            current_scope = scope_before.call(*args)
+
+            unless current_scope.to_sql.include?("LEFT OUTER JOIN #{pi_table}")
+              current_scope.joins("LEFT OUTER JOIN #{pi_table} ON #{pi_table}.issue_id = #{Issue.table_name}.id AND #{pi_table}.user_id = #{User.current.id}")
+            else
+              current_scope
+            end
           }
         end
       end
