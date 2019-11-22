@@ -32,7 +32,9 @@
 
       <%#= form.text_field(:tag_list, {value: @rule.tags.map(&:name).join(', ')}) %>
 
-      <%= form.text_field(:tag) %>
+      <%= form.select :tag, ActsAsTaggableOn::Tag.all.map(&:name) %>
+
+      <%#= form.text_field(:tag) %>
     </p>
   </div>
   <%= submit_tag l(:button_save) %>

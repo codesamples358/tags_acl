@@ -1,4 +1,5 @@
 class TagPermissionRulesController < ApplicationController
+  before_action :require_admin
   before_action :find_rule, except: [:new, :destroy, :create]
 
   def new
