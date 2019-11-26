@@ -64,7 +64,7 @@ class TagPermissionRule < ActiveRecord::Base
       pi         = self.prohibited_issues.new
       pi.issue   = issue
       pi.user_id = issue.membership_user_id
-      pi.save
+      pi.save!
     end
   end
 
