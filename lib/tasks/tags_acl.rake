@@ -1,3 +1,3 @@
-task :check_task_acl => :environment do
+task :check_tags_acl => :environment do
   TagPermissionRule.check
 end
