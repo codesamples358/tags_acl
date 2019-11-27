@@ -98,4 +98,26 @@ class TagPermissionRule < ActiveRecord::Base
       end
     end
   end
+
+  def self.check
+    rule = self.first
+    ok    = true
+
+
+    rule.members_scope.each do |member|
+      count = rule.issue_scope.where(project_id: member.project_id).count
+      if count > 0      
+        actual_count = ProhibitedIssue.where(user_id: member.user_id).joins(:issue).where(issues: {project_id: member.project_id}).count
+        puts "Issue count, that should be hidden from #{member.user.login} on project '#{member.project.name}': #{count}"
+        puts "Actually hidden: #{actual_count}"
+        ok = false if actual_count != count
+      end
+    end
+
+    if ok 
+      puts "\n\nOK."
+    else
+      puts "\n\nBUG."
+    end
+  end
 end
